@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <title>I'm your Lighthouse</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#000">
+  <link rel="icon" sizes="192x192" href="logo.png">
+  <style>
+    html,body {
+      height: 100vh;
+      overflow: hidden;
+      margin: 0;
+      font: 12px "Roboto", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    :focus {
+      outline-color: #242ffd;
+    }
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 300ms ease-in-out;
+      /*will-change: background-color;*/
+    }
+    body.playing {
+      background-color: #000;
+    }
+    body.playing footer {
+      visibility: hidden;
+    }
+    .logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .logo img {
+      height: 200px;
+      width: auto;
+      cursor: pointer;
+    }
+    footer {
+      position: absolute;
+      bottom: 32px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+    }
+    a {
+      color: #212121;
+      text-decoration: none;
+    }
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      /*background-color: #242ffd;*/
+    }
+  </style>
+</head>
+<body>
+
+<div class="logo" tabindex="0">
+  <img src="pwa-lighthouse.png" alt="LH logo">
+</div>
+
+<canvas></canvas>
+
+<footer>
+  <a href="https://www.youtube.com/watch?v=bx9JXImZRI0" rel="noopener" target="_blank">inspiration</a>
+</footer>
+
+<script>
+(function() {
+  'use strict';
+
+  class Loader {
+    constructor(url=null) {
+      this.url = url;
+    }
+
+    loadSound(url=this.url) {
+      return fetch(url).then(resp => resp.arrayBuffer());
+    }
+  }
+
+  class SoundFile {
+    constructor(url=null) {
+      this.audioCtx = new AudioContext();
+      this.loader = new Loader(url);
+      this.buffer = null;
+    }
+
+    load(url) {
+      if (this.buffer) {
+        return Promise.resolve(this.buffer);
+      }
+
+      return this.loader.loadSound(url)
+        .then(ab => this.audioCtx.decodeAudioData(ab))
+        .then(decodeBuffer => {
+          this.buffer = decodeBuffer;
+          return this.buffer;
+        });
+    }
+
+    play() {
+      this.source = this.audioCtx.createBufferSource();
+
+      this.analyser = this.audioCtx.createAnalyser();
+      this.analyser.fftSize = 2048;
+
+      this.source.connect(this.analyser);
+      this.analyser.connect(this.audioCtx.destination);
+
+      this.source.buffer = this.buffer;
+
+      this.source.start();
+      this.source.loop = true;
+      // this.source.loopStart = 0.24;
+      // this.source.loopEnd = 0.34;
+    }
+
+    stop() {
+      if (!this.source) {
+        return;
+      }
+      this.source.loop = false;
+      this.source.stop();
+    }
+  }
+
+  class Visualizer {
+    constructor(sound, canvas, fft = true) {
+      this.canvasCtx = canvas.getContext('2d');
+      this.sound = sound;
+      this._rafId = null;
+
+      this.fft = fft;
+
+      this.WIDTH = document.documentElement.clientWidth;
+      this.HEIGHT = document.documentElement.clientHeight;
+      canvas.width = this.WIDTH;
+      canvas.height = this.HEIGHT;
+      // canvas.width = this.WIDTH * devicePixelRatio;
+      // canvas.height = this.HEIGHT * devicePixelRatio;
+      // this.canvasCtx.scale(devicePixelRatio, devicePixelRatio);
+    }
+
+    stop() {
+      cancelAnimationFrame(this._rafId);
+      this.canvasCtx.clearRect(0, 0, this.WIDTH, this.HEIGHT);
+    }
+
+    _drawLineGraph(dataArray) {
+      const bufferLength = this.sound.analyser.frequencyBinCount;
+      const sliceWidth = this.WIDTH * 1.0 / bufferLength;
+      let x = 0;
+
+      for (let i = 0; i < bufferLength; i++) {
+        const v = dataArray[i] / 128.0;
+        const y = v * this.HEIGHT / 2;
+
+        if (i === 0) {
+          this.canvasCtx.moveTo(x, y);
+        } else {
+          this.canvasCtx.lineTo(x, y);
+        }
+
+        x += sliceWidth;
+      }
+
+      this.canvasCtx.stroke();
+    }
+
+    _drawBarGraph(dataArray) {
+      const bufferLength = this.sound.analyser.frequencyBinCount;
+      const barWidth = Math.ceil((this.WIDTH / bufferLength) * 3);
+      let x = 0;
+
+      for (let i = 0; i < bufferLength; ++i) {
+        let barHeight = dataArray[i] / 2;
+        this.canvasCtx.fillStyle = 'rgb(54,113,254)';
+        this.canvasCtx.fillRect(x, this.HEIGHT - barHeight, barWidth, barHeight);
+        x += barWidth + 1;
+      }
+
+      this.canvasCtx.stroke();
+    }
+
+    draw() {
+      this._rafId = requestAnimationFrame(this.draw.bind(this));
+
+      const bufferLength = this.sound.analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+
+      if (this.fft) {
+        sound.analyser.getByteFrequencyData(dataArray);
+      } else {
+        sound.analyser.getByteTimeDomainData(dataArray);
+      }
+
+      this.canvasCtx.clearRect(0, 0, this.WIDTH, this.HEIGHT);
+
+      this.canvasCtx.lineWidth = 2;
+      this.canvasCtx.strokeStyle = 'rgb(255, 255, 255)';
+
+      this.canvasCtx.beginPath();
+
+      // this._drawLineGraph(dataArray);
+      this._drawBarGraph(dataArray);
+    }
+  }
+
+  // const sound = new SoundFile('longer2.mp3');
+  const sound = new SoundFile('looped.mp3');
+  const visualizer = new Visualizer(sound, document.querySelector('canvas'));
+
+  function play(e) {
+    e.preventDefault();
+    sound.stop();
+    sound.load().then(buffer => {
+      document.body.classList.add('playing');
+      sound.play();
+      visualizer.draw();
+    });
+  }
+
+  function stop(e) {
+    e.preventDefault();
+    sound.load().then(buffer => {
+      document.body.classList.remove('playing');
+      sound.stop();
+      visualizer.stop();
+    });
+  }
+
+  function init() {
+    //const logo = document.querySelector('.logo img');
+    document.addEventListener('mousedown', play);
+    document.addEventListener('touchstart', play);
+    document.addEventListener('keydown', function(e) {
+      if (e.keyCode === 13) {
+        play(e);
+      }
+    });
+
+    document.addEventListener('mouseup', stop);
+    document.addEventListener('touchend', stop);
+
+    sound.load();
+  }
+
+  init();
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js', {scope: '/'})
+      .then(registration => {
+        console.log('Service Worker Registered');
+      });
+    navigator.serviceWorker.ready.then(registration => {
+      console.log('Service Worker Ready');
+    });
+
+    // // SW is already registered, load sound immediately.
+    // if (navigator.serviceWorker.controller) {
+    //   sound.load();
+    // }
+  }
+})();
+</script>
+</body>
+</html>
