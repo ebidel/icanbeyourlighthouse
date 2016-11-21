@@ -1,6 +1,6 @@
 'use strict';
 
-const VERSION = '1.1.3';
+const VERSION = '0.0.1';
 
 const PRECACHE = `precache-v${VERSION}`;
 const RUNTIME = `runtime-v${VERSION}`;
