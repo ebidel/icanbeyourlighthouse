@@ -1,11 +1,12 @@
 'use strict';
 
-const PRECACHE = 'precache-v1.1.1';
-const RUNTIME = 'runtime-v1.1.1';
+const PRECACHE = 'precache-v1.1.2';
+const RUNTIME = 'runtime-v1.1.2';
 
 const PRECACHE_URLS = [
   '/',
   'index.html', // Alias for /
+  'logo.png',
   'pwa-lighthouse.png',
   'looped.mp3',
 ];
