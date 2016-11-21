@@ -35,8 +35,9 @@ self.addEventListener('activate',  e => {
 self.addEventListener('fetch', e => {
   const requestURL = new URL(e.request.url);
 
-  // Skip cross-origin requests.
-  if (requestURL.origin !== self.location.origin) {
+  // Skip cross-origin requests or if the request was for the sw.js file itself.
+  if (requestURL.origin !== self.location.origin ||
+      requestURL.pathname === self.location.pathname) {
     return;
   }
 
