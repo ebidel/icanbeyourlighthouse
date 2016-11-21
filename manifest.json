@@ -1,8 +1,8 @@
 {
   "name": "I'm your Lighthouse",
   "short_name": "I'm your Lighthouse",
-  "theme_color": "#fff",
-  "background_color": "#fff",
+  "theme_color": "#304ffe",
+  "background_color": "#304ffe",
   "display": "standalone",
   "orientation": "portrait",
   "start_url": "/",
