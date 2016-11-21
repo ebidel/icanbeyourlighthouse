@@ -1,7 +1,9 @@
 'use strict';
 
-const PRECACHE = 'precache-v1.1.3';
-const RUNTIME = 'runtime-v1.1.3';
+const VERSION = '1.1.3';
+
+const PRECACHE = `precache-v${VERSION}`;
+const RUNTIME = `runtime-v${VERSION}`;
 
 const PRECACHE_URLS = [
   '/',
