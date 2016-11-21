@@ -44,9 +44,10 @@ self.addEventListener('fetch', e => {
   const fetchingAndCaching = caches.match(e.request).then(cacheResp => {
     return cacheResp || fetch(e.request).then(fetchResp => {
       // Put a copy of the response in the runtime cache.
-      return caches.open(RUNTIME)
-        .then(cache => cache.put(e.request, fetchResp.clone()))
-        .then(() => fetchResp);
+      // return caches.open(RUNTIME)
+      //   .then(cache => cache.put(e.request, fetchResp.clone()))
+      //   .then(() => fetchResp);
+      return fetchResp;
     });
   });
 
