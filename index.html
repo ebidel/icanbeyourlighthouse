@@ -126,8 +126,6 @@
 
       this.source.start();
       this.source.loop = true;
-      // this.source.loopStart = 0.24;
-      // this.source.loopEnd = 0.34;
     }
 
     stop() {
@@ -227,6 +225,12 @@
 
   function play(e) {
     e.preventDefault();
+
+     // Ignore multi touch.
+    if (e.touches && e.touches.length > 1) {
+      return;
+    }
+
     sound.stop();
     sound.load().then(buffer => {
       document.body.classList.add('playing');
