@@ -189,7 +189,7 @@
 <footer>
   <!--<a href="https://www.youtube.com/watch?v=bx9JXImZRI0" rel="noopener" target="_blank">inspiration</a>-->
   <!-- TODO: automate incrementing this version with the cache versions in sw.js -->
-  <span>v0.0.6</span>
+  <span>v0.0.7</span>
 </footer>
 
 <div id="toast">
@@ -252,11 +252,6 @@
       this._timeoutId = setTimeout(() => {
         this._el.classList.remove('show');
       }, timeout);
-
-      // // After which, remove it altogether.
-      // this._el.addEventListener('transitionend', e => {
-      //   e.target.parentNode.removeChild(evt.target);
-      // });
     }
   }
 
