@@ -1,7 +1,7 @@
 'use strict';
 
 // Also change the version in index.html
-const VERSION = '0.0.4';
+const VERSION = '0.0.5';
 
 const PRECACHE = `precache-v${VERSION}`;
 const RUNTIME = `runtime-v${VERSION}`;
