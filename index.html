@@ -131,15 +131,21 @@
       top: 4px;
       margin: 30px;
       perspective: 10px;
-      animation: rotate 5s infinite;
       transform-origin: left;
       left: 142px;
-      animation-direction: reverse;
+      animation-name: rotate;
+      animation-duration: 5s;
+      animation-iteration-count: infinite;
+      animation-play-state: paused;
+    }
+    #lightWrapper.animate {
+      animation-play-state: running;
     }
 
     .light {
-      background: linear-gradient(to right, white 0%, white 16%, rgba(255, 255, 255, 0.72) 48%, rgba(255, 255, 255, 0) 100%);
-      background: linear-gradient(to right, #ffd54f 0%, #fff176 16%, hsla(54, 100%, 80%, 0.72) 48%, rgba(255, 255, 255, 0) 100%);
+      background: linear-gradient(to right, #ffd54f 0%, #fff176 16%,
+                                  hsla(54, 100%, 80%, 0.72) 48%,
+                                  rgba(255, 255, 255, 0) 100%);
       width: 100%;
       height: 100%;
       transform: rotatey(-12deg);
@@ -399,6 +405,7 @@
   // const sound = new SoundFile('longer2.mp3');
   const sound = new SoundFile('looped.mp3');
   const visualizer = new Visualizer(sound, document.querySelector('canvas'));
+  const ligthtWrapper = document.querySelector('#lightWrapper');
 
   function play(e) {
     e.preventDefault();
@@ -412,6 +419,8 @@
       document.body.classList.add('playing');
       sound.play();
       visualizer.draw();
+
+      ligthtWrapper.classList.add('animate');
     });
   }
 
@@ -421,6 +430,7 @@
       document.body.classList.remove('playing');
       sound.stop();
       visualizer.stop();
+      ligthtWrapper.classList.remove('animate');
     });
   }
 
