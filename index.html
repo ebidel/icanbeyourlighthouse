@@ -35,6 +35,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      position: relative;
     }
     .logo img {
       height: 200px;
@@ -64,12 +65,59 @@
       z-index: -1;
       /*background-color: #242ffd;*/
     }
+
+    /* thanks https://codepen.io/BradleyPJ/pen/pbGPZV */
+    #lightWrapper {
+      width: 100px;
+      height: 25px;
+      position: absolute;
+      top: 4px;
+      margin: 30px;
+      perspective: 10px;
+      animation: rotate 5s infinite;
+      transform-origin: left;
+      left: 142px;
+    }
+
+    .light {
+      background: linear-gradient(to right, white 0%, white 16%, rgba(255, 255, 255, 0.72) 48%, rgba(255, 255, 255, 0) 100%);
+      background: linear-gradient(to right, #ffd54f 0%, #fff176 16%, hsla(54, 100%, 80%, 0.72) 48%, rgba(255, 255, 255, 0) 100%);
+      width: 100%;
+      height: 100%;
+      transform: rotatey(-12deg);
+      border-radius: 5000px 5px 5px 5000px;
+    }
+
+    @keyframes rotate {
+      0% {
+        transform: rotatey(0deg);
+        opacity: 0;
+      }
+      15% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 1;
+      }
+      60% {
+        transform: rotatey(180deg) translateX(-14px);
+      }
+      61% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 0;
+      }
+    }
   </style>
 </head>
 <body>
 
 <div class="logo" tabindex="0">
   <img src="pwa-lighthouse.png" alt="LH logo">
+  <div id="lightWrapper">
+    <div class="light"></div>
+  </div>
 </div>
 
 <canvas></canvas>
