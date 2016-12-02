@@ -1,0 +1,20 @@
+{
+  "name": "imyourlighthouse",
+  "version": "0.0.6",
+  "description": "When you need guidance",
+  "author": "Eric Bidelman <ebidel@>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/ebidel/icanbeyourlighthouse/issues"
+  },
+  "homepage": "https://icanbeyourlighthouse.firebaseapp.com/",
+  "main": "index.html",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ebidel/icanbeyourlighthouse"
+  },
+  "scripts": {
+    "release": "npm version patch",
+    "deploy": "firebase deploy"
+  }
+}
