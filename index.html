@@ -17,6 +17,7 @@
       margin: 0;
       font: 12px "Roboto", sans-serif;
       -webkit-font-smoothing: antialiased;
+      touch-action: none;
     }
     body {
       display: flex;
@@ -43,6 +44,7 @@
       width: auto;
       cursor: pointer;
       border-radius: 80px;
+      pointer-events: none; /* prevent Chrome 55+ download image popup */
     }
     footer {
       position: absolute;
@@ -428,6 +430,9 @@
 
   function init() {
     document.addEventListener('mousedown', play);
+    // touch-action: none added to body to document-level passive
+    // event listener intervention. Otherwise, we'd need to add {passive: false}
+    // to this handler...and feature detect before doing so.
     document.addEventListener('touchstart', play);
     document.addEventListener('keydown', function(e) {
       switch (e.keyCode) {
