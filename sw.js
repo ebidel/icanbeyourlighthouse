@@ -1,7 +1,7 @@
 'use strict';
 
 // Also change the version in index.html
-const VERSION = '0.0.8';
+const VERSION = '0.0.9';
 
 const PRECACHE = `precache-v${VERSION}`;
 const RUNTIME = `runtime-v${VERSION}`;
@@ -11,7 +11,7 @@ const PRECACHE_URLS = [
   'index.html', // Alias for /
   'logo.png',
   'pwa-lighthouse.png',
-  'looped.mp3',
+  'looped.mp3'
 ];
 
 self.addEventListener('install', e => {
@@ -47,9 +47,9 @@ self.addEventListener('fetch', e => {
   const fetchingAndCaching = caches.match(e.request).then(cacheResp => {
     return cacheResp || fetch(e.request).then(fetchResp => {
       // Put a copy of the response in the runtime cache.
-      // return caches.open(RUNTIME)
-      //   .then(cache => cache.put(e.request, fetchResp.clone()))
-      //   .then(() => fetchResp);
+      return caches.open(RUNTIME)
+        .then(cache => cache.put(e.request, fetchResp.clone()))
+        .then(() => fetchResp);
       return fetchResp;
     });
   });
