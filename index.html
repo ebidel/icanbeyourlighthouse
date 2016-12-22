@@ -398,13 +398,21 @@
         };
       }
 
-      this.loader = new Loader(url);
-      this.buffer = null;
-
-      this.updateSelectedLoop(url);
+      this.url = url;
     }
 
-    updateSelectedLoop(url) {
+    get url() {
+      return this._url;
+    }
+
+    set url(val) {
+      this._url = val;
+      this.buffer = null;
+      this.loader = new Loader(val);
+      this.updateSelectedLoopUI(val);
+    }
+
+    updateSelectedLoopUI(url) {
       const loops = document.querySelectorAll('.loop_choice');
       loops.forEach(loop => {
         loop.classList.remove('selected');
@@ -570,7 +578,7 @@
   function setLoopChoice(e) {
     const src = e.target.getAttribute('href');
     if (src && src !== sound.loader.url) {
-      sound = new SoundFile(src);
+      sound.url = src;
       visualizer.sound = sound;
     }
   }
