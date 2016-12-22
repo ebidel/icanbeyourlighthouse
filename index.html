@@ -184,6 +184,7 @@
       color: rgb(50,109,254);
       background-color: #fff;
       white-space: nowrap;
+      user-select: none;
     }
     .loop_choice.selected {
       background-color: rgb(50,109,254);
@@ -327,6 +328,8 @@
 
   const DEFAULT_LOOP_SELECTION = 'looped.mp3';
 
+  const BUFFER_CACHE = {};
+
   class Loader {
     constructor(url=null) {
       this.url = url;
@@ -423,16 +426,18 @@
     }
 
     load(url = null) {
-      if (this.buffer) {
+      url = this.loader.url || url;
+
+      if (BUFFER_CACHE[url]) {
+        this.buffer = BUFFER_CACHE[url];
         return Promise.resolve(this.buffer);
       }
-
-      url = this.loader.url || url;
 
       return this.loader.loadSound(url)
         .then(ab => this.audioCtx.decodeAudioData(ab))
         .then(decodeBuffer => {
           this.buffer = decodeBuffer;
+          BUFFER_CACHE[url] = this.buffer;
           return this.buffer;
         });
     }
@@ -583,6 +588,11 @@
     }
   }
 
+  function isTouchScreen() {
+    return ('ontouchstart' in window) ||
+           window.DocumentTouch && document instanceof DocumentTouch;
+  }
+
   function init() {
     document.addEventListener('mousedown', play);
     // touch-action: none added to body to document-level passive
@@ -615,6 +625,17 @@
     picker.addEventListener('click', function(e) {
       e.preventDefault();
       e.stopPropagation();
+    });
+
+    // if (isTouchScreen()) {
+    //   document.addEventListener('contextmenu', e => {
+    //     if (e.target.classList.contains('loop_choice')) {
+    //       e.preventDefault(); // Prevent Chrome 55+ from showing download popup.
+    //     }
+    //   });
+    // }
+    document.addEventListener('contextmenu', e => {
+       e.preventDefault(); // Prevent Chrome 55+ from showing download popup.
     });
 
     document.addEventListener('visibilitychange', function(e) {
