@@ -17,7 +17,7 @@
       margin: 0;
       font: 12px "Roboto", sans-serif;
       -webkit-font-smoothing: antialiased;
-      touch-action: none;
+      /*touch-action: none;*/
     }
     body {
       display: flex;
@@ -128,6 +128,7 @@
       animation-duration: 5s;
       animation-iteration-count: infinite;
       animation-play-state: paused;
+      pointer-events: none;
     }
     #lightWrapper.animate {
       animation-play-state: running;
@@ -315,7 +316,7 @@
 <footer>
   <!--<a href="https://www.youtube.com/watch?v=bx9JXImZRI0" rel="noopener" target="_blank">inspiration</a>-->
   <!-- TODO: automate incrementing this version with the cache versions in sw.js -->
-  <span>v0.1.0</span>
+  <span>v0.1.1</span>
 </footer>
 
 <div id="toast">
@@ -363,7 +364,7 @@
         location.reload();
       };
 
-      container.addEventListener('touchstart', refreshPage);
+      container.addEventListener('touchstart', refreshPage, {passive: false});
       container.addEventListener('mousedown', refreshPage);
 
       this._el = container;
@@ -595,10 +596,10 @@
 
   function init() {
     document.addEventListener('mousedown', play);
-    // touch-action: none added to body to document-level passive
-    // event listener intervention. Otherwise, we'd need to add {passive: false}
-    // to this handler...and feature detect before doing so.
-    document.addEventListener('touchstart', play);
+    // TODO: feature detect passive event listeners and remove. The intervention
+    // for document-level passive event listener causes bugs. When removed,
+    // put `touch-action: none` back on body.
+    document.addEventListener('touchstart', play, {passive: false});
     document.addEventListener('keydown', function(e) {
       switch (e.keyCode) {
         case 13: // enter
@@ -616,11 +617,11 @@
     });
 
     document.addEventListener('mouseup', stop);
-    document.addEventListener('touchend', stop);
+    document.addEventListener('touchend', stop), {passive: false};
 
     const picker = document.querySelector('.loop_choices');
     picker.addEventListener('mousedown', setLoopChoice);
-    picker.addEventListener('touchstart', setLoopChoice);
+    picker.addEventListener('touchstart', setLoopChoice, {passive: false});
     // Prevent anchor redirects.
     picker.addEventListener('click', function(e) {
       e.preventDefault();
